@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+    <head>
+        <title>フィックスポイント プログラミング試験問題 設問1</title>
+        <script>
+            const selectFile = () => {
+                const selectFiles = document.querySelector("#select-file").files;
+                let file = selectFiles[0];
+                const reader = new FileReader();
+                reader.readAsText(file);
+                reader.onload = () => {
+                    let rows = reader.result.split("\n");
+                    let rowcount = rows.length;
+                    let errorlog = [];
+                    let time = "n.d";
+                    console.log(rowcount);
+                    for(let i = 0; i < rowcount; i++){
+                        const row0 = rows[i].split(",");
+                        var time0 = row0[0];
+                        const ip0 = row0[1];
+                        const ping0 = row0[2];
+                        if (isNaN(ping0)){
+                            const year0 = time0.slice(0,4);
+                            const month0 = time0.slice(4,6);
+                            const date0 = time0.slice(6,8);
+                            const hour0 = time0.slice(8,10);
+                            const minute0 = time0.slice(10,12);
+                            const second0 = time0.slice(12,14);
+                            time0 = new Date(year0, month0, date0, hour0, minute0, second0);
+                            for(let j = i+1; j < rowcount; j++){
+                                const row1 = rows[j].split(",");
+                                var time1 = row1[0];
+                                const ip1 = row1[1];
+                                const ping1 = row1[2];                                
+                                if(ip0 == ip1){
+                                    if(isNaN(ping1)){
+                                        rows.splice(j,1);
+                                        rowcount = rowcount-1;
+                                        j = j-1;
+                                        continue;
+                                    }else{
+                                        var year1 = time1.slice(0,4);
+                                        var month1 = time1.slice(4,6);
+                                        var date1 = time1.slice(6,8);
+                                        var hour1 = time1.slice(8,10);
+                                        var minute1 = time1.slice(10,12);
+                                        var second1 = time1.slice(12,14);
+                                        time1 = new Date(year1, month1, date1, hour1, minute1,second1);
+                                        time = (time1-time0)/1000;
+                                        break;
+                                    }
+                                }
+                            }
+                            errorlog = errorlog+"状態:故障"+", サーバアドレス:"+ip0+", 期間:"+year0+month0+date0+hour0+minute0+second0+"～"+year1+month1+date1+hour1+minute1+second1+", 時間:"+time+"秒\n";
+                            time = "n.d";
+                        }
+                    }
+                    document.querySelector("#output").innerHTML = errorlog;
+                }
+                reader.onerror = () => {
+                    errorlog = "読み込みエラー";
+                }
+            }
+
+        </script>
+    </head>
+    <body>
+        <p>フィックスポイント プログラミング試験問題</p>
+        <input type="file" id="select-file" onchange="selectFile()" /><br />
+        <textarea id="output"></textarea>
+    </body>
+    <style>
+        body {
+            width: 90%;
+            margin: 5%;
+        }
+        textarea {
+          width: 90%;
+          height: 500px;
+          margin: 4%;
+        }
+      </style>
+</html>
